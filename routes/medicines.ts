@@ -6,8 +6,21 @@ import { TextDecoder } from "util";
 const router = express.Router();
 const utf8Decoder = new TextDecoder();
 
-// GET /api/medicines - Get all medicines
+// GET /api/medicines - Get all medicines (bc.ts)
 router.get("/", async (req: Request, res: Response) => {
+  try {
+    const contract = await initializeFabric();
+    const resultBytes = await contract.evaluateTransaction("GetAllMedicines");
+    const resultJson = utf8Decoder.decode(resultBytes);
+    const result = JSON.parse(resultJson);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to initialize Fabric" });
+  }
+});
+
+// GET /api/medicines/all - Get all medicines with auth (queryAll.ts)
+router.get("/all", async (req: Request, res: Response) => {
   try {
     // TODO: Implement auth verification
     // const user = await verifyAuth(req, res);
@@ -39,6 +52,121 @@ router.get("/", async (req: Request, res: Response) => {
       message: 'Internal server error',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
+  }
+});
+
+// POST /api/medicines/create - Create new medicine (createMed.ts)
+router.post("/create", async (req: Request, res: Response) => {
+  try {
+    const assetId = `asset${String(Date.now())}`;
+    const {
+      postingDate,
+      postingHospital,
+      medicineName,
+      quantity,
+      unit,
+      batchNumber,
+      manufacturer,
+      manufactureDate,
+      expiryDate,
+      currentLocation,
+      status,
+    } = req.body;
+
+    const contract = await initializeFabric();
+    await contract.submitTransaction(
+      "CreateMedicine",
+      assetId,
+      postingDate,
+      postingHospital,
+      medicineName,
+      quantity,
+      unit,
+      batchNumber,
+      manufacturer,
+      manufactureDate,
+      expiryDate,
+      currentLocation,
+      status
+    );
+    
+    console.log("*** Transaction committed successfully");
+    res.status(200).json({
+      message: "Transaction committed successfully",
+      assetId: assetId,
+    });
+  } catch (error) {
+    console.error("Error in transaction:", error);
+    res.status(500).json({ error: "Failed to initialize Fabric" });
+  }
+});
+
+// POST /api/medicines/query-by-id - Query medicine by ID (queryById.ts)
+router.post("/query-by-id", async (req: Request, res: Response) => {
+  try {
+    const { assetId } = req.body;
+    const contract = await initializeFabric();
+    
+    const resultBytes = await contract.evaluateTransaction("ReadAssetById", assetId);
+    const resultJson = utf8Decoder.decode(resultBytes);
+    const result = JSON.parse(resultJson);
+    
+    console.log("*** Transaction committed successfully");
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error in transaction:", error);
+    res.status(500).json({ error: "Failed to initialize Fabric" });
+  }
+});
+
+// POST /api/medicines/borrow - Borrow medicine (borrowMed.ts)
+router.post("/borrow", async (req: Request, res: Response) => {
+  try {
+    const borrowDate = `${String(Date.now())}`;
+    const borrowID = `borrow${String(Date.now())}`;
+    const { medicineID, borrowHospital, borrowQty } = req.body;
+
+    const contract = await initializeFabric();
+    const commit = await contract.submitAsync("BorrowMedicine", {
+      arguments: [medicineID, borrowID, borrowHospital, String(borrowQty), borrowDate],
+    });
+    
+    const previousMedData = utf8Decoder.decode(commit.getResult());
+    console.log(`*** Successfully submitted transaction to borrow ${previousMedData}`);
+    
+    const status = await commit.getStatus();
+    if (!status.successful) {
+      throw new Error(
+        `Transaction ${status.transactionId} failed to commit with status code ${String(status.code)}`
+      );
+    }
+    
+    console.log("*** Transaction committed successfully");
+    res.status(200).json({
+      message: "Transaction committed successfully",
+      assetId: medicineID,
+    });
+  } catch (error) {
+    console.error("Error in transaction:", error);
+    res.status(500).json({ error: "Failed to initialize Fabric" });
+  }
+});
+
+// DELETE /api/medicines/:id - Delete medicine (deleteMed.ts)
+router.delete("/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { medicineName } = req.body;
+
+    console.log("*** Deleting medicine", id, medicineName);
+    
+    const contract = await initializeFabric();
+    await contract.submitTransaction("DeleteMedicine", id);
+    
+    res.status(200).json({ message: "Medicine deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting medicine:", error);
+    res.status(500).json({ message: "Error deleting medicine" });
   }
 });
 
