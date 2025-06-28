@@ -32,10 +32,10 @@ const mspId = envOrDefault("MSP_ID", "hospitalaMSP");
 //   )
 // );
 const cryptoPath =
-  "/home/ec2-user/test_network_lending_med/organizations/peerOrganizations/hospitala.example.com";
-  // AWS ENV
+// AWS ENV
+  // "/home/ec2-user/test_network_lending_med/organizations/peerOrganizations/hospitala.example.com";
   // Boss ENV
-//   "/Users/kb/Developer/2025/test_network_lending_med/organizations/peerOrganizations/hospitala.example.com";
+  "/Users/kb/Developer/2025/test_network_lending_med/organizations/peerOrganizations/hospitala.example.com";
 // Pup ENV
 // '/Users/siwakorn.pup/project-hospital/backend/test_network_lending_med/organizations/peerOrganizations/hospitala.example.com';
 //Bank ENV

@@ -34,7 +34,7 @@ router.post("/query-by-status", async (req: Request, res: Response) => {
     const { loggedInHospital, status } = req.body;
     
     const contract = await initializeFabric();
-    console.log('loggedInHospital', loggedInHospital);
+    console.log('loggedInHospital', loggedInHospital, 'status', status);
     
     const resultBytes = await contract.evaluateTransaction(
       "QueryRequestToHospital",
@@ -45,6 +45,7 @@ router.post("/query-by-status", async (req: Request, res: Response) => {
     const result = JSON.parse(resultJson);
     
     console.log("*** QueryRequestToHospital Transaction committed successfully");
+    console.log('*** Result', result);
     res.status(200).json(result);
   } catch (error) {
     console.log("error", error);
