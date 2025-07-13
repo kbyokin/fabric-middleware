@@ -65,6 +65,7 @@ router.post("/query-by-status", async (req: Request, res: Response) => {
     const result = JSON.parse(resultJson);
     
     console.log("*** QuerySharingStatusToHospital Transaction committed successfully");
+    console.log('*** Result', result);
     res.status(200).json(result);
   } catch (error) {
     console.log("error", error);
@@ -76,13 +77,14 @@ router.post("/query-by-status", async (req: Request, res: Response) => {
 router.post("/update", async (req: Request, res: Response) => {
   try {
     const updatedAt = new Date().toString();
-    const { sharingId, returnTerm, acceptOffer } = req.body;
+    const { sharingId, returnTerm, acceptOffer, status } = req.body;
     
     const acceptOfferAsset = {
       sharingId: sharingId,
       returnTerm: returnTerm,
       acceptOffer: acceptOffer,
       updatedAt: updatedAt,
+      status: status,
     };
     
     console.log('acceptOfferAsset', acceptOfferAsset);
