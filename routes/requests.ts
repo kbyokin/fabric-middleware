@@ -16,7 +16,8 @@ router.post("/create", async (req: Request, res: Response) => {
       JSON.stringify(requestData),
       JSON.stringify(selectedHospitals)
     );
-    
+    console.log('requestData', requestData);
+    console.log('selectedHospitals', selectedHospitals);
     console.log("*** Transaction committed successfully");
     res.status(200).json({
       message: "Transaction committed successfully",
@@ -45,7 +46,7 @@ router.post("/query-by-status", async (req: Request, res: Response) => {
     const result = JSON.parse(resultJson);
     
     console.log("*** QueryRequestToHospital Transaction committed successfully");
-    console.log('*** Result', result);
+    // console.log('*** Result', result);
     res.status(200).json(result);
   } catch (error) {
     console.log("error", error);

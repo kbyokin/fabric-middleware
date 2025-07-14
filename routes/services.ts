@@ -135,4 +135,24 @@ router.post("/requests-with-assets", async (req: Request, res: Response) => {
   }
 });
 
+router.post("/query-remaining-amount", async (req: Request, res: Response) => {
+  try {
+    const { queryTicketId } = req.body;
+    console.log('queryTicketId', queryTicketId);
+    
+    const contract = await initializeFabric();
+    const resultBytes = await contract.evaluateTransaction(
+      "GetRemainingAmount",
+      queryTicketId
+    );
+    const resultJson = utf8Decoder.decode(resultBytes);
+    const result = JSON.parse(resultJson);
+    
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error fetching remaining amount:", error);
+    res.status(500).json({ error: "Failed to fetch remaining amount" });
+  }
+})
+
 export default router; 

@@ -170,4 +170,18 @@ router.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/medicines/update-ticket-status
+router.post("/update-ticket-status", async (req: Request, res: Response) => {
+  try {
+    const { id, status, updatedAt } = req.body;
+    console.log('req.body', req.body);
+    const contract = await initializeFabric();
+    await contract.submitTransaction("UpdateTicketStatus", id, status, updatedAt);
+    res.status(200).json({ message: "Ticket status updated successfully" });
+  } catch (error) {
+    console.error("Error updating ticket status:", error);
+    res.status(500).json({ message: "Error updating ticket status" });
+  }
+})
+
 export default router; 

@@ -42,8 +42,8 @@ router.post("/query", async (req: Request, res: Response) => {
     const resultJson = utf8Decoder.decode(resultBytes);
     const result = JSON.parse(resultJson);
     
-    console.log("*** QuerySharingStatusToHospital Transaction committed successfully");
     res.status(200).json(result);
+    console.log("*** QuerySharingStatusToHospital Transaction committed successfully");
   } catch (error) {
     console.log("error", error);
     res.status(500).json({ error: "Failed to initialize Fabric" });
@@ -65,7 +65,7 @@ router.post("/query-by-status", async (req: Request, res: Response) => {
     const result = JSON.parse(resultJson);
     
     console.log("*** QuerySharingStatusToHospital Transaction committed successfully");
-    console.log('*** Result', result);
+    // console.log('*** Result', result);
     res.status(200).json(result);
   } catch (error) {
     console.log("error", error);
