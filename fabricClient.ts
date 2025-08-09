@@ -130,6 +130,9 @@ async function newGrpcConnection(): Promise<grpc.Client> {
   const tlsCredentials = grpc.credentials.createSsl(tlsRootCert);
   return new grpc.Client(peerEndpoint, tlsCredentials, {
     "grpc.ssl_target_name_override": peerHostAlias,
+    // Increase gRPC message size limits to handle larger payloads (e.g., Base64 images)
+    "grpc.max_receive_message_length": 16 * 1024 * 1024, // 16 MB
+    "grpc.max_send_message_length": 16 * 1024 * 1024, // 16 MB
   });
 }
 

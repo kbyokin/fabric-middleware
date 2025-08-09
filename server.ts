@@ -31,7 +31,8 @@ async function startServer() {
   app.set('trust proxy', true);
 
   app.use(cors());
-  app.use(express.json());
+  // Increase JSON body size limit to handle Base64 images
+  app.use(express.json({ limit: '10mb' }));
   
   // Add request logging middleware
   app.use(requestLogger);

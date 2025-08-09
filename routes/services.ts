@@ -155,4 +155,24 @@ router.post("/query-remaining-amount", async (req: Request, res: Response) => {
   }
 })
 
+router.post("/query-history", async (req: Request, res: Response) => {
+  try {
+    const { loggedInHospital } = req.body;
+    console.log('loggedInHospital', loggedInHospital);
+    
+    const contract = await initializeFabric();
+    const resultBytes = await contract.submitTransaction(
+      "GetHistoryTransactions",
+      loggedInHospital
+    );
+    const resultJson = utf8Decoder.decode(resultBytes);
+    const result = JSON.parse(resultJson);
+    console.log('result', result);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    res.status(500).json({ error: "Failed to fetch history" });
+  }
+})
+
 export default router; 
