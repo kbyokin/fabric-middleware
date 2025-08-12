@@ -106,4 +106,26 @@ router.post("/update", async (req: Request, res: Response) => {
   }
 });
 
+router.post("/update-status", async (req: Request, res: Response) => {
+  try {
+    const { sharingId, status, updatedAt } = req.body;
+
+    const contract = await initializeFabric();
+    await contract.submitTransaction(
+      "UpdateSharingStatus",
+      sharingId,
+      status,
+      updatedAt
+    )
+    console.log("*** Transaction committed successfully");
+    res.status(200).json({
+      message: "Transaction committed sucessfully",
+      assetId: sharingId,
+    })
+  } catch (error) {
+    console.log("Error in transaction:", error);
+    res.status(500).json({error: error});
+  }
+})
+
 export default router; 
