@@ -76,8 +76,7 @@ router.post("/query-by-status", async (req: Request, res: Response) => {
 // POST /api/sharing/update - Update sharing (updateSharing.tsx)
 router.post("/update", async (req: Request, res: Response) => {
   try {
-    const updatedAt = new Date().toString();
-    const { sharingId, returnTerm, acceptOffer, status } = req.body;
+    const { sharingId, returnTerm, acceptOffer, status, updatedAt } = req.body;
     
     const acceptOfferAsset = {
       sharingId: sharingId,
